@@ -19,6 +19,7 @@ object TestSpark {
       .master("local[*]")
       .getOrCreate()
 
+
     import spark.implicits._
     // 创建一个简单的 DataFrame
     val data = Seq((1, "Alice"), (2, "Bobq"))

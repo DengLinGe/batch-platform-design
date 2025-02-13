@@ -12,6 +12,13 @@
         <slf4j.version>1.7.30</slf4j.version>
         <spark.version>3.4.4</spark.version>
         <scala.version>2.12.10</scala.version>
+        <!--Linux-->
+        <!--<os.detected.name>linux</os.detected.name>
+        <os.detected.arch>x86_64</os.detected.arch>
+        <os.detected.classifier>linux-x86_64</os.detected.classifier>
+        -->
+        <!--Windows-->
+        <os.detected.classifier>windows-x86_64</os.detected.classifier>
     </properties>
 
     <dependencies>
@@ -46,9 +53,22 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+        <!-- Protobuf运行时库 -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.6.1</version>
+        </dependency>
 
     </dependencies>
     <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.2</version>
+            </extension>
+        </extensions>
         <plugins>
             <!-- Scala compiler plugin -->
             <plugin>
@@ -64,6 +84,36 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.xolstice.maven.plugins</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>0.6.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <!-- 工具版本 -->
+                    <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+                    <!--                &lt;!&ndash;默认值，proto源文件路径&ndash;&gt;-->
+                    <!--                <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot>-->
+                    <!--                &lt;!&ndash;默认值，proto目标java文件路径&ndash;&gt;-->
+                    <!--                <outputDirectory>${project.basedir}/src/main/java</outputDirectory>-->
+                    <!--设置是否在生成java文件之前清空outputDirectory的文件，默认值为true，设置为false时也会覆盖同名文件-->
+                    <clearOutputDirectory>false</clearOutputDirectory>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <!--在执行mvn compile的时候会执行以下操作-->
+                        <phase>compile</phase>
+                        <goals>
+                            <!--生成OuterClass类-->
+                            <goal>compile</goal>
+                            <!--生成Grpc类-->
+                            <!--goal>compile-custom</goal-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
 
         </plugins>
     </build>
