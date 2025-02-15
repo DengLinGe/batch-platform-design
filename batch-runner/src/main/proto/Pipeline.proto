@@ -1,0 +1,215 @@
+syntax = "proto3";
+
+
+option java_package = "entity";
+option java_outer_classname = "PipelineProto";
+//option java_multiple_files = true;
+message Pipeline {
+  Job job = 1;
+  repeated Source sources = 2;
+  repeated Workflow workflows = 3;
+  repeated Sink sinks = 4;
+}
+// 任务描述
+message Job {
+  string name = 1;
+  string description = 2;
+}
+
+// 数据源
+message Source {
+  string uid = 1;
+  string output_ids = 2;
+  string source_type = 3;
+  Mysql mysql = 4;
+  JSON json = 5;
+  Redis redis = 6;
+  CSV csv = 7;
+  HBase hbase = 8;
+  // MySQL 数据源配置
+  message Mysql {
+    string url = 1; // JDBC 连接 URL
+    string driver = 2; // JDBC 驱动类名
+    string dbtable = 3; // 要读取的表名
+    string user = 4; // 数据库用户名
+    string password = 5; // 数据库密码
+  }
+
+  // JSON 数据源配置
+  message JSON {
+    string path = 1; // JSON 文件路径
+    bool multiLine = 2; // 是否为多行 JSON 文件
+  }
+
+  // Redis 数据源配置
+  message Redis {
+    string host = 1; // Redis 主机地址
+    int32 port = 2; // Redis 端口号
+    string password = 3; // Redis 密码
+    string db = 4; // Redis 数据库编号
+    string keyPattern = 5; // 要读取的键的模式
+  }
+
+  // CSV 数据源配置
+  message CSV {
+    string path = 1; // CSV 文件路径
+    bool header = 2; // 文件是否包含表头
+    string delimiter = 3; // 列分隔符
+    string quote = 4; // 引号字符
+    string escape = 5; // 转义字符
+  }
+
+  // HBase 数据源配置
+  message HBase {
+    string tableName = 1; // HBase 表名
+    string zookeeperQuorum = 2; // ZooKeeper 地址
+    string zookeeperClientPort = 3; // ZooKeeper 客户端端口
+    string columnFamily = 4; // 列族名
+  }
+}
+
+// 工作流
+message Workflow {
+  string uid = 1;
+  repeated string input = 2;
+  repeated string output = 3;
+  Select select = 4;
+  Filter filter = 5;
+  GroupBy group_by = 6;
+  Join join = 7;
+  WithColumn with_column = 8;
+  Sql sql = 9;
+  UserDefined user_defined = 10;
+  Aggregate aggregate = 11;
+  Sort sort = 12;
+  Window window = 13;
+  Drop drop = 14;
+  // Select 算子配置
+  message Select {
+    repeated string columns = 1; // 要选择的列名
+  }
+
+  // Filter 算子配置
+  message Filter {
+    string condition = 1; // 过滤条件，例如 "age > 18"
+  }
+
+  // GroupBy 算子配置
+  message GroupBy {
+    repeated string columns = 1; // 分组依据的列名
+  }
+
+  // Join 算子配置
+  message Join {
+    string other_table_id = 1; // 要连接的另一个表的 ID
+    string join_type = 2; // 连接类型，如 "inner", "left", "right", "full"
+    string on_condition = 3; // 连接条件，例如 "table1.id = table2.id"
+  }
+
+  // WithColumn 算子配置
+  message WithColumn {
+    string new_column_name = 1; // 新列的名称
+    string expression = 2; // 新列的表达式，例如 "col1 + col2"
+  }
+
+  // Sql 算子配置
+  message Sql {
+    string query = 1; // SQL 查询语句
+  }
+
+  // 用户自定义算子配置
+  message UserDefined {
+    string function_name = 1; // 自定义函数名
+    repeated string parameters = 2; // 函数参数
+  }
+
+  // Aggregate 算子配置
+  message Aggregate {
+    repeated string group_by_columns = 1; // 分组依据的列名
+    repeated Aggregation aggregation = 2; // 聚合操作列表
+  }
+
+  message Aggregation {
+    string function = 1; // 聚合函数，如 "sum", "avg", "count"
+    string column = 2; // 要聚合的列名
+    string alias = 3; // 聚合结果的别名
+  }
+
+  // Sort 算子配置
+  message Sort {
+    repeated SortColumn sort_columns = 1; // 排序列列表
+  }
+
+  message SortColumn {
+    string column = 1; // 要排序的列名
+    bool ascending = 2; // 是否升序排序
+  }
+
+  // Window 算子配置
+  message Window {
+    repeated string partition_by_columns = 1; // 分区依据的列名
+    repeated string order_by_columns = 2; // 排序依据的列名
+    string window_function = 3; // 窗口函数，如 "row_number", "rank", "dense_rank"
+    string alias = 4; // 窗口函数结果的别名
+  }
+
+  // Drop 算子配置
+  message Drop {
+    repeated string columns = 1; // 要删除的列名
+  }
+}
+
+// 数据输出
+message Sink {
+  string uid = 1;
+  string input_ids = 2;
+  CsvSink csv = 3;
+  ParquetSink parquet = 4;
+  JsonSink json = 5;
+  MysqlSink jdbc = 6;
+  KafkaSink kafka = 7;
+  ConsoleSink console = 8;
+  // CSV 输出配置
+  message CsvSink {
+    string path = 1; // 输出 CSV 文件的路径
+    bool header = 2; // 是否包含表头
+    string delimiter = 3; // 列分隔符，默认为逗号
+    string quote = 4; // 引号字符
+    string escape = 5; // 转义字符
+  }
+
+  // Parquet 输出配置
+  message ParquetSink {
+    string path = 1; // 输出 Parquet 文件的路径
+  }
+
+  // JSON 输出配置
+  message JsonSink {
+    string path = 1; // 输出 JSON 文件的路径
+    bool multiLine = 2; // 是否为多行 JSON 文件
+  }
+
+  // JDBC 输出配置
+  message MysqlSink {
+    string url = 1; // JDBC 连接 URL
+    string driver = 2; // JDBC 驱动类名
+    string dbtable = 3; // 要写入的表名
+    string user = 4; // 数据库用户名
+    string password = 5; // 数据库密码
+  }
+
+  // Kafka 输出配置
+  message KafkaSink {
+    string bootstrapServers = 1; // Kafka 服务器地址
+    string topic = 2; // 要写入的 Kafka 主题
+    string keySerializer = 3; // 键的序列化器
+    string valueSerializer = 4; // 值的序列化器
+  }
+
+  // 控制台输出配置
+  message ConsoleSink {
+    bool truncate = 1; // 是否截断过长的行
+    int32 numRows = 2; // 要显示的行数
+  }
+}
+
