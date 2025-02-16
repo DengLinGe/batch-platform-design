@@ -1,9 +1,24 @@
 package utils;
 
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 public class YamlUtils {
+
+
+    public static void main(String[] args) {
+        Yaml yaml = new Yaml();
+        // 从 resources 文件夹中获取指定 YAML 文件的输入流
+        InputStream inputStream = YamlUtils.class
+                .getClassLoader()
+                .getResourceAsStream("test.yaml");
+        Map<String, Object> data = yaml.load(inputStream);
+        System.out.println(data);
+
+    }
 
     /**
      * 从 Map 中获取指定 key 对应的 String 类型的值
@@ -20,6 +35,21 @@ public class YamlUtils {
             }
         }
         return null;
+    }
+
+    public static String getStringOrDefault(Map<String, Object> data, String key, String defaultValue) {
+        String value = getString(data, key);
+        return value == null ? defaultValue : value;
+    }
+
+    public static boolean getBoolean(Map<String, Object> data, String key) {
+        if (data.containsKey(key)) {
+            String value = (String)data.get(key);
+            if (value!= null && value == "true") {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -61,6 +91,21 @@ public class YamlUtils {
         return null;
     }
 
+
+    @SuppressWarnings("unchecked")
+    public static List<String> getList(Map<String, Object> data, String key) {
+        if (data.containsKey(key)) {
+            Object value = data.get(key);
+            if (value instanceof List) {
+                try {
+                    return (List<String>) value;
+                } catch (ClassCastException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
     /**
      * 从 Map 中获取指定 key 对应的 Map<String, Object> 类型的值
      *
@@ -78,4 +123,7 @@ public class YamlUtils {
         }
         return null;
     }
+
+
+
 }

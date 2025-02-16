@@ -19,7 +19,7 @@ message Job {
 // 数据源
 message Source {
   string uid = 1;
-  string output_ids = 2;
+  repeated string output = 2;
   string source_type = 3;
   Mysql mysql = 4;
   JSON json = 5;
@@ -30,9 +30,11 @@ message Source {
   message Mysql {
     string url = 1; // JDBC 连接 URL
     string driver = 2; // JDBC 驱动类名
-    string dbtable = 3; // 要读取的表名
+    string dbName = 3; // 要读取的表名
     string user = 4; // 数据库用户名
     string password = 5; // 数据库密码
+    string column = 6; // 要读取的列名
+    string tableName = 7; // 要读取的表名
   }
 
   // JSON 数据源配置
@@ -162,7 +164,7 @@ message Workflow {
 // 数据输出
 message Sink {
   string uid = 1;
-  string input_ids = 2;
+  string input = 2;
   CsvSink csv = 3;
   ParquetSink parquet = 4;
   JsonSink json = 5;
@@ -193,9 +195,10 @@ message Sink {
   message MysqlSink {
     string url = 1; // JDBC 连接 URL
     string driver = 2; // JDBC 驱动类名
-    string dbtable = 3; // 要写入的表名
-    string user = 4; // 数据库用户名
-    string password = 5; // 数据库密码
+    string dbName = 3; // 要写入的表名
+    string tableName = 4; // 要写入的表名
+    string user = 5; // 数据库用户名
+    string password = 6; // 数据库密码
   }
 
   // Kafka 输出配置

@@ -17,25 +17,26 @@ public class Boot {
     static Logger logger = LoggerFactory.getLogger(Boot.class);
 
     public static void main(String[] args) {
-        // 解析命令行参数
-        Map<String, String> params = parseCommandLineArgs(args);
-
-        // 获取配置文件名
-        String configFileName = params.get("configName");
-        if (configFileName == null) {
-            System.err.println("请通过 -configName=your_config_file.yaml 指定 YAML 配置文件的名称。");
-            return;
-        }
+//        // 解析命令行参数
+//        Map<String, String> params = parseCommandLineArgs(args);
+//
+//        // 获取配置文件名
+//        String configFileName = params.get("configName");
+//        if (configFileName == null) {
+//            System.err.println("请通过 -configName=your_config_file.yaml 指定 YAML 配置文件的名称。");
+//            return;
+//        }
 
         // 创建 Yaml 对象
         Yaml yaml = new Yaml();
         // 从 resources 文件夹中获取指定 YAML 文件的输入流
         InputStream inputStream = Boot.class
                 .getClassLoader()
-                .getResourceAsStream(configFileName);
-        if (inputStream == null) {
-            throw new RuntimeException("找不到配置文件: " + configFileName);
-        }
+                .getResourceAsStream("test.yaml");
+//                .getResourceAsStream(configFileName);
+//        if (inputStream == null) {
+//            throw new RuntimeException("找不到配置文件: " + configFileName);
+//        }
 
         // 加载 YAML 文件内容到一个 Map 对象中
         Map<String, Object> data = yaml.load(inputStream);

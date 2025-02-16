@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.6.1</version>
+            <version>3.21.12</version> <!-- 可以根据需要选择合适的版本 -->
         </dependency>
 
     </dependencies>

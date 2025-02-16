@@ -1,6 +1,46 @@
-database:
-  - a:
-    url: jdbc:mysql://localhost:3306/mydb
-    username: root
-  - b:
-    password: password123
+job:
+  name: "ctcvr"
+  env: "prod"
+  owner: "lingo"
+  description: "This is a test job"
+sources:
+  -
+    uid: "mysqlSources"
+    source_type: "mysql"
+    dbName: "db_test"
+    tableName: "table_test"
+    column: "col_test"
+  -
+    uid: "CSVSources"
+    source_type: "csv"
+    path: "/path/to/csv"
+
+
+workflows:
+  -
+    uid: test_select
+    op: select
+    input: [mysqlSources]
+    columns: ["age"]
+  -
+    uid: test_filter
+    op: filter
+    input: [CSVSources, test_select]
+    condition: "age > 18"
+  -
+    uid: test_sql
+    op: sql
+    input: [test_filter]
+    query: "select * from test_filter"
+
+sinks:
+    -
+        uid: "mysqlSink"
+        sink_type: "mysql"
+        dbName: "db_test"
+        tableName: "table_test"
+        input: [test_sql]
+    -
+        uid: "CSVSink"
+        sink_type: "csv"
+        input: [test_filter]
