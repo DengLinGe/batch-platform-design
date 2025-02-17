@@ -1,7 +1,7 @@
-package creator;
+package framework.creator;
 
 import entity.PipelineProto;
-import op.workflows.*;
+import framework.op.workflows.*;
 import utils.YamlUtils;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class WorkflowCreator implements Creator {
             workflowBuilder.addAllInput(YamlUtils.getList(map, INPUT));
 
 
-            // 根据 operator_type 关键字进行不同 op 的填充
+            // 根据 operator_type 关键字进行不同 framework.op 的填充
             switch (Objects.requireNonNull(YamlUtils.getString(map, OPERATOR_TYPE))) {
                 case "select":
                     new SelectOp().create(map, workflowBuilder);

@@ -39,8 +39,8 @@ sinks:
         sink_type: "mysql"
         dbName: "db_test"
         tableName: "table_test"
-        input: [test_sql]
+        input: test_sql
     -
         uid: "CSVSink"
         sink_type: "csv"
-        input: [test_filter]
+        input: test_filter

@@ -1,10 +1,10 @@
-package creator;
+package framework.creator;
 
 import entity.PipelineProto;
-import op.sinks.ConsoleSinkOp;
-import op.sinks.CsvSinkOp;
-import op.sinks.JsonSinkOp;
-import op.sinks.MysqlSinkOp;
+import framework.op.sinks.ConsoleSinkOp;
+import framework.op.sinks.CsvSinkOp;
+import framework.op.sinks.JsonSinkOp;
+import framework.op.sinks.MysqlSinkOp;
 import utils.YamlUtils;
 
 
@@ -36,7 +36,7 @@ public class SinkCreator implements Creator {
             // 设置 input
             sinkBuilder.setInput(YamlUtils.getString(map, INPUT));
 
-            // 根据 sink_type 关键字进行不同 op 的填充
+            // 根据 sink_type 关键字进行不同 framework.op 的填充
             switch (Objects.requireNonNull(YamlUtils.getString(map, SINK_TYPE))) {
                 case "csv":
                     new CsvSinkOp().create(map, sinkBuilder);
@@ -44,7 +44,7 @@ public class SinkCreator implements Creator {
                 case "json":
                     new JsonSinkOp().create(map, sinkBuilder);
                     break;
-                case "jdbc":
+                case "mysql":
                     new MysqlSinkOp().create(map, sinkBuilder);
                     break;
 

@@ -1,4 +1,4 @@
-package op.sinks;
+package framework.op.sinks;
 
 import entity.PipelineProto;
 

@@ -1,7 +1,9 @@
 import entity.PipelineProto;
+import framework.YamlTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import runner.BatchRunner;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -43,6 +45,8 @@ public class Boot {
         YamlTransformer yamlTransformer = new YamlTransformer(data);
         PipelineProto.Pipeline pipeline = yamlTransformer.transformToPipeline();
 
+        BatchRunner runner = new BatchRunner(pipeline);
+        runner.evaluate(pipeline);
 
 
     }
