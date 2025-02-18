@@ -1,8 +1,12 @@
 package runner
 
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class RunnerContext {
+  private val sparkSession: SparkSession = SparkSession.builder()
+    .appName("BatchRunner")
+    .master("local")
+    .getOrCreate()
   private var currentDataFrame: DataFrame = _
 
   /**
@@ -19,5 +23,12 @@ class RunnerContext {
    */
   def getDataFrame: DataFrame = {
     currentDataFrame
+  }
+
+  /**
+   * 获取 SparkSession
+   * */
+  def getSparkSession: SparkSession = {
+    sparkSession
   }
 }

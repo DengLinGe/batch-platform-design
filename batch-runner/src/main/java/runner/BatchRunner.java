@@ -35,12 +35,12 @@ public class BatchRunner {
         // 进行拓扑排序
         List<Node> sortedNodes = topologicalSort(nodeMap, dag);
 
-        // 调用 Translator 类将 Node 转为具体执行的类
-//        Translator translator = new Translator();
-//        for (Node node : sortedNodes) {
-//            Evaluator evaluator = translator.translate(node);
-//            evaluator.evaluate(context);
-//        }
+//         调用 Translator 类将 Node 转为具体执行的类
+        Translator translator = new Translator();
+        for (Node node : sortedNodes) {
+            Evaluator evaluator = translator.translate(node);
+            evaluator.evaluate(context);
+        }
     }
 
     // 将 Pipeline 转化为 Node 列表
