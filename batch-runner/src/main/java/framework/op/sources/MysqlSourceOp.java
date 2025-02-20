@@ -26,18 +26,13 @@ public class MysqlSourceOp implements SourceOp {
         String driver = (String) config.getOrDefault("driver", "com.mysql.cj.jdbc.Driver");
         mysqlBuilder.setDriver(driver);
 
-        // 提取并设置 dbtable 属性，若未配置则使用空字符串作为默认值
-        if (config.get("dbName") == null) {
+        // 提取并设置 dbtable 属性
+        if (config.get("dbTable") == null) {
             throw new IllegalArgumentException("Mysql source must have dbtable.");
         }
-        String dbName = (String) config.get("dbName");
-        mysqlBuilder.setDbName(dbName);
+        String dbTable = (String) config.get("dbTable");
+        mysqlBuilder.setDbTable(dbTable);
 
-        if (config.get("tableName") == null) {
-            throw new IllegalArgumentException("Mysql source must have tableName.");
-        }
-        String tableName = (String) config.get("tableName");
-        mysqlBuilder.setTableName(tableName);
 
         // 提取并设置 user 属性，若未配置则使用空字符串作为默认值
         String user = (String) config.getOrDefault("user", "root");

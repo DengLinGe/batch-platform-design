@@ -33,6 +33,12 @@ public class WorkflowCreator implements Creator {
             // 设置 input_ids
             workflowBuilder.addAllInput(YamlUtils.getList(map, INPUT));
 
+            // 设置是否存储
+            boolean isStore = YamlUtils.getBoolean(map, "is_store");
+            if (isStore) {
+                workflowBuilder.setIsStore(true);
+            }
+
 
             // 根据 operator_type 关键字进行不同 framework.op 的填充
             switch (Objects.requireNonNull(YamlUtils.getString(map, OPERATOR_TYPE))) {
@@ -42,7 +48,7 @@ public class WorkflowCreator implements Creator {
                 case "filter":
                     new FilterOp().create(map, workflowBuilder);
                     break;
-                case "group_by":
+                case "groupBy":
                     new GroupByOp().create(map, workflowBuilder);
                     break;
                 case "join":
@@ -56,6 +62,12 @@ public class WorkflowCreator implements Creator {
                     break;
                 case "user_defined":
                     new UserDefinedOp().create(map, workflowBuilder);
+                    break;
+                case SHOW:
+                    new ShowOp().create(map, workflowBuilder);
+                    break;
+                case TEMP_STORAGE:
+                    workflowBuilder.setTempStorage(PipelineProto.Workflow.TempStorage.newBuilder().build());
                     break;
 //                case "aggregate":
 //                    new AggregateOp().create(map, workflowBuilder);

@@ -1,8 +1,9 @@
-package runner.evaluator
+package runner.evaluator.workflow
 
 import entity.PipelineProto
 import org.apache.spark.sql.DataFrame
 import runner.RunnerContext
+import runner.evaluator.Evaluator
 
 import scala.jdk.CollectionConverters.asScalaBufferConverter
 

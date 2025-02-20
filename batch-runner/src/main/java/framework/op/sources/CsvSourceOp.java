@@ -26,7 +26,7 @@ public class CsvSourceOp implements SourceOp {
         csvBuilder.setHeader(header);
 
         // 提取并设置 delimiter 属性，若未配置则使用默认值逗号
-        String delimiter = (String) config.getOrDefault("delimiter", ",");
+        String delimiter = (String) config.getOrDefault("delimiter", null);
         csvBuilder.setDelimiter(delimiter);
 
         // 提取并设置 quote 属性，若未配置则使用默认值双引号

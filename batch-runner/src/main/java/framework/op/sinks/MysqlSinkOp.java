@@ -17,8 +17,7 @@ public class MysqlSinkOp implements SinkOp{
         PipelineProto.Sink.MysqlSink.Builder mysqlSinkBuilder = PipelineProto.Sink.MysqlSink.newBuilder();
         String url = YamlUtils.getString(config, "url");
         String driver = YamlUtils.getStringOrDefault(config, "driver", "com.mysql.cj.jdbc.Driver");
-        String dbName = YamlUtils.getString(config, "dbName");
-        String tableName = YamlUtils.getString(config, "tableName");
+        String dbTable = YamlUtils.getString(config, "dbTable");
         String user = YamlUtils.getString(config, "user");
         String password = YamlUtils.getString(config, "password");
 
@@ -28,12 +27,10 @@ public class MysqlSinkOp implements SinkOp{
         if (driver != null) {
             mysqlSinkBuilder.setDriver(driver);
         }
-        if (dbName != null) {
-            mysqlSinkBuilder.setDbName(dbName);
+        if (dbTable != null) {
+            mysqlSinkBuilder.setDbTable(dbTable);
         }
-        if (tableName != null) {
-            mysqlSinkBuilder.setTableName(tableName);
-        }
+
         if (user != null) {
             mysqlSinkBuilder.setUser(user);
         }

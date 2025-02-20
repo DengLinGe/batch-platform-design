@@ -7,40 +7,66 @@ sources:
   -
     uid: "mysqlSources"
     source_type: "mysql"
-    dbName: "db_test"
-    tableName: "table_test"
-    column: "col_test"
+    url: "jdbc:mysql://localhost:3306/sqltest"
+    dbTable: "advertisement"
+    user: "root"
+    password: "21314zaq"
   -
     uid: "CSVSources"
     source_type: "csv"
-    path: "/path/to/csv"
-
-
+    delimiter: ","
+    header: true
+    path: "ad_conversion.csv"
+    is_store: true
+#
+#
 workflows:
   -
-    uid: test_select
-    op: select
+    uid: test_join
+    op: join
     input: [mysqlSources]
-    columns: ["age"]
+    join_type: inner
+    other_table_id: CSVSources
+    on_condition: ad_id
   -
-    uid: test_filter
-    op: filter
-    input: [CSVSources, test_select]
-    condition: "age > 18"
+    uid: test_groupBy
+    op: groupBy
+    input: [test_join]
+    columns: ["advertiser_id", "ad_type", "placement"]
+    agg:
+      - "sum=impressions=total_impressions"
+      - "sum=clicks=total_clicks"
+      - "count=conversion_time=total_conversions"
+      - "sum=conversion_value=total_conversion_value"
+      - "sum=cost=total_cost"
   -
     uid: test_sql
     op: sql
-    input: [test_filter]
-    query: "select * from test_filter"
+    input: [test_groupBy]
+    query: >
+      select 
+      advertiser_id,
+      ad_type,placement,
+      total_impressions,
+      total_clicks,
+      total_conversions,
+      total_conversion_value,
+      (total_conversion_value - total_cost) / total_cost as roi
+      from tempTable
+  -
+    uid: test_show
+    op: show
+    input: [test_sql]
 
 sinks:
-    -
-        uid: "mysqlSink"
-        sink_type: "mysql"
-        dbName: "db_test"
-        tableName: "table_test"
-        input: test_sql
-    -
-        uid: "CSVSink"
-        sink_type: "csv"
-        input: test_filter
+    - uid: "mysqlSink"
+      input: test_sql
+      sink_type: "mysql"
+      url: "jdbc:mysql://localhost:3306/sqltest"
+      dbTable: "advertiser_ad_performance"
+      user: "root"
+      password: "21314zaq"
+#    -
+#        uid: "CSVSink"
+#        sink_type: "csv"
+#        input: test_filter

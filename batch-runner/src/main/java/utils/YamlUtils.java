@@ -44,8 +44,8 @@ public class YamlUtils {
 
     public static boolean getBoolean(Map<String, Object> data, String key) {
         if (data.containsKey(key)) {
-            String value = (String)data.get(key);
-            if (value!= null && value == "true") {
+            Boolean value = (Boolean)data.get(key);
+            if (value!= null && value) {
                 return true;
             }
         }

@@ -9,6 +9,7 @@ message Pipeline {
   repeated Source sources = 2;
   repeated Workflow workflows = 3;
   repeated Sink sinks = 4;
+
 }
 // 任务描述
 message Job {
@@ -26,15 +27,16 @@ message Source {
   Redis redis = 6;
   CSV csv = 7;
   HBase hbase = 8;
+
+  bool isStore = 9;
   // MySQL 数据源配置
   message Mysql {
     string url = 1; // JDBC 连接 URL
     string driver = 2; // JDBC 驱动类名
-    string dbName = 3; // 要读取的表名
+    string dbTable = 3; // 要读取的表名
     string user = 4; // 数据库用户名
     string password = 5; // 数据库密码
     string column = 6; // 要读取的列名
-    string tableName = 7; // 要读取的表名
   }
 
   // JSON 数据源配置
@@ -86,6 +88,19 @@ message Workflow {
   Sort sort = 12;
   Window window = 13;
   Drop drop = 14;
+  TempStorage temp_storage = 15;
+  Show show = 16;
+  bool isStore = 17;
+  // 数据临时存储配置
+  message TempStorage {
+
+  }
+
+  // Show 算子配置
+  message Show {
+    int32 numRows = 1; // 要显示的行数
+  }
+
   // Select 算子配置
   message Select {
     repeated string columns = 1; // 要选择的列名
@@ -99,6 +114,7 @@ message Workflow {
   // GroupBy 算子配置
   message GroupBy {
     repeated string columns = 1; // 分组依据的列名
+    repeated string agg = 2; // 聚合操作列表
   }
 
   // Join 算子配置
@@ -195,10 +211,9 @@ message Sink {
   message MysqlSink {
     string url = 1; // JDBC 连接 URL
     string driver = 2; // JDBC 驱动类名
-    string dbName = 3; // 要写入的表名
-    string tableName = 4; // 要写入的表名
-    string user = 5; // 数据库用户名
-    string password = 6; // 数据库密码
+    string dbTable = 3; // 要写入的表名
+    string user = 4; // 数据库用户名
+    string password = 5; // 数据库密码
   }
 
   // Kafka 输出配置

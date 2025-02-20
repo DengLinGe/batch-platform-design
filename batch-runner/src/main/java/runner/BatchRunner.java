@@ -3,9 +3,13 @@ package runner;
 import entity.Node;
 import entity.PipelineProto;
 import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import runner.evaluator.Evaluator;
 
 import java.util.*;
+
+import static entity.Constants.*;
 
 /**
  * @Author: Deng.
@@ -14,13 +18,16 @@ import java.util.*;
  * @Modified By:
  */
 public class BatchRunner {
+
+    public static Logger logger = LoggerFactory.getLogger(BatchRunner.class);
+
     public RunnerContext context;
     public SparkSession sparkSession;
 
 
     public BatchRunner(PipelineProto.Pipeline pipeline) {
         this.context = new RunnerContext();
-//        this.sparkSession = SparkSession.builder().appName("BatchRunner").master("local[*]").getOrCreate();
+        this.sparkSession = SparkSession.builder().appName("BatchRunner").master("local[*]").getOrCreate();
         evaluate(pipeline);
     }
 
@@ -53,8 +60,8 @@ public class BatchRunner {
             String operatorType = getSourceOperatorType(source);
             List<String> inputs = new ArrayList<>();
             List<String> outputs = new ArrayList<>(source.getOutputList());
-            Object config = getSourceConfig(source);
-            nodes.add(new Node(uid, operatorType, inputs, outputs, config));
+//            Object config = getSourceConfig(source);
+            nodes.add(new Node(uid, operatorType, inputs, outputs, source));
         }
 
         // 处理 workflows 节点
@@ -63,8 +70,8 @@ public class BatchRunner {
             String operatorType = getWorkflowOperatorType(workflow);
             List<String> inputs = new ArrayList<>(workflow.getInputList());
             List<String> outputs = new ArrayList<>(workflow.getOutputList());
-            Object config = getWorkflowConfig(workflow);
-            nodes.add(new Node(uid, operatorType, inputs, outputs, config));
+//            Object config = getWorkflowConfig(workflow);
+            nodes.add(new Node(uid, operatorType, inputs, outputs, workflow));
         }
 
         // 处理 sinks 节点
@@ -83,11 +90,13 @@ public class BatchRunner {
     // 获取 source 节点的算子类型
     private static String getSourceOperatorType(PipelineProto.Source source) {
         if (source.hasMysql()) {
-            return "mysql_source";
+            return MYSQL_SOURCE;
         } else if (source.hasCsv()) {
-            return "csv_source";
+            return CSV_SOURCE;
         }
-        return null;
+        logger.error("Unknown source type: " + source);
+        throw new IllegalArgumentException("Unknown source type: " + source);
+
     }
 
     // 获取 source 节点的配置信息
@@ -103,13 +112,23 @@ public class BatchRunner {
     // 获取 workflow 节点的算子类型
     private static String getWorkflowOperatorType(PipelineProto.Workflow workflow) {
         if (workflow.hasSelect()) {
-            return "select";
+            return SELECT;
         } else if (workflow.hasFilter()) {
-            return "filter";
+            return FILTER;
         } else if (workflow.hasSql()) {
-            return "sql";
+            return SQL;
+        } else if (workflow.hasTempStorage()) {
+            return TEMP_STORAGE;
+        } else if (workflow.hasShow()) {
+            return SHOW;
+        } else if (workflow.hasJoin()) {
+            return JOIN;
+        } else if (workflow.hasGroupBy()) {
+            return GROUPBY;
         }
-        return null;
+        logger.info("Unknown workflow type: " + workflow);
+        throw new IllegalArgumentException("Unknown workflow type: " + workflow);
+
     }
 
     // 获取 workflow 节点的配置信息
@@ -120,6 +139,10 @@ public class BatchRunner {
             return workflow.getFilter();
         } else if (workflow.hasSql()) {
             return workflow.getSql();
+        } else if (workflow.hasShow()) {
+            return workflow.getShow();
+        } else if (workflow.hasJoin()) {
+            return workflow.getJoin();
         }
         return null;
     }
@@ -127,9 +150,9 @@ public class BatchRunner {
     // 获取 sink 节点的算子类型
     private static String getSinkOperatorType(PipelineProto.Sink sink) {
         if (sink.hasJdbc()) {
-            return "jdbc_sink";
+            return MYSQL_SINK;
         } else if (sink.hasCsv()) {
-            return "csv_sink";
+            return CSV_SINK;
         }
         return null;
     }

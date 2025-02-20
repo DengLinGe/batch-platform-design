@@ -34,7 +34,11 @@ public class SourceCreator implements Creator {
             // 设置名字
             sourceBuilder.setUid(YamlUtils.getString(map, UID));
 
-
+            // 设置是否存储
+            boolean isStore = YamlUtils.getBoolean(map, "is_store");
+            if (isStore) {
+                sourceBuilder.setIsStore(true);
+            }
 
             // 根据sources_type关键字进行不同op的填充
             switch (Objects.requireNonNull(YamlUtils.getString(map, SOURCES_TYPE))) {
